@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Dawn's personal portfolio - athlete, designer, philosopher">
+  <meta name="theme-color" content="#ff5b9e">
+  <title>dawn :3</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Icons -->
+  <script src="https://code.iconify.design/iconify-icon/1.0.8/iconify-icon.min.js" defer></script>
+</head>
+
+<body id="top">
+  <!-- Skip link for accessibility -->
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- Decorative background -->
+  <div class="bg-scene" aria-hidden="true">
+    <div class="clouds"></div>
+    <div class="hearts"></div>
+    <div class="sparkles"></div>
+  </div>
+
+  <!-- Navigation -->
+  <header class="nav" role="banner">
+    <div class="container nav-inner">
+      <a href="#top" class="logo" aria-label="Dawn's homepage">
+        <span class="logo-icon" aria-hidden="true">♥</span>
+        <span class="logo-text">dawn :3</span>
+      </a>
+      
+<nav role="navigation" aria-label="Main navigation">
+    <a href="#about">About</a>
+    <a href="#interests">Interests</a>
+    <a href="#links">Links</a>
+    <a href="projects.html">Projects</a>  <!-- Add this line -->
+</nav>
+      
+      <!-- Hidden navigation descriptions for screen readers -->
+      <div class="sr-only">
+        <div id="nav-about">Learn more about Dawn</div>
+        <div id="nav-interests">Explore Dawn's interests and hobbies</div>
+        <div id="nav-links">Find Dawn on social platforms</div>
+      </div>
+    </div>
+  </header>
+
+
+  <!-- Main Content -->
+  <main id="main-content" class="container">
+    <!-- Hero Section -->
+    <section class="hero section-animate" aria-labelledby="hero-title">
+      <div class="hero-card">
+        <figure class="pfp" role="img" aria-label="Dawn's profile picture with animated halo">
+          <div class="avatar-wrap">
+            <img class="avatar" 
+                 src="https://i.imgur.com/0rKzar5.png" 
+                 alt="Dawn's avatar - a stylized portrait"
+                 loading="eager">
+            <div class="halo" 
+                 style="--halo-img: url('https://i.imgur.com/eo44BNx.png');" 
+                 aria-hidden="true"
+                 role="presentation"></div>
+          </div>
+        </figure>
+        
+        <div class="hero-content">
+          <div class="tag-row" role="list" aria-label="Personal attributes">
+            <div class="tag" role="listitem">
+              <iconify-icon icon="mdi:sparkles" aria-hidden="true"></iconify-icon>
+              <span>twunk</span>
+            </div>
+            <div class="tag" role="listitem">
+              <iconify-icon icon="mdi:dumbbell" aria-hidden="true"></iconify-icon>
+              <span>athlete</span>
+            </div>
+            <div class="tag" role="listitem">
+              <iconify-icon icon="mdi:brain" aria-hidden="true"></iconify-icon>
+              <span>gifted</span>
+            </div>
+            <div class="tag" role="listitem">
+              <iconify-icon icon="mdi:flower" aria-hidden="true"></iconify-icon>
+              <span>pretty</span>
+            </div>
+          </div>
+
+          <h1 class="title" id="hero-title">dawn :3</h1>
+          <p class="hero-subtitle">a clueless puppy boy</p>
+
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#interests" aria-describedby="btn-interests-desc">
+              <iconify-icon icon="mdi:heart" aria-hidden="true"></iconify-icon>
+              <span>what i'm into</span>
+            </a>
+            <a class="btn btn-secondary" href="#links" aria-describedby="btn-links-desc">
+              <iconify-icon icon="mdi:link-variant" aria-hidden="true"></iconify-icon>
+              <span>find me</span>
+            </a>
+          </div>
+          
+          <!-- Hidden button descriptions -->
+          <div class="sr-only">
+            <div id="btn-interests-desc">Explore Dawn's interests and hobbies</div>
+            <div id="btn-links-desc">Find Dawn on social media platforms</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="section-animate" aria-labelledby="about-title">
+      <h2 class="section-title" id="about-title">about me ig</h2>
+
+      <div class="about-grid">
+        <div class="stat-card" role="group" aria-labelledby="iq-stat">
+          <div class="stat-number" id="iq-stat" aria-label="IQ score">86%</div>
+          <div class="stat-label">my IQ :3</div>
+        </div>
+        <div class="stat-card" role="group" aria-labelledby="birthday-stat">
+          <div class="stat-number" id="countdown" aria-live="polite" aria-label="Countdown to 18th birthday">
+            Loading...
+          </div>
+          <div class="stat-label">days til 18</div>
+        </div>
+      </div>
+
+      <div class="card about-text">
+        <p>
+          hi! i spend way too much time making things look good and overthinking literally everything. 
+          i'm into sports bc moving is fun, design bc pretty things make me happy, and random deep 
+          conversations at 3am. also yes i test well but that doesn't mean i have my life figured out lol. 
+          still figuring out what i actually want to do but having fun in the meantime
+        </p>
+      </div>
+    </section>
+
+    <!-- Interests Section -->
+    <section id="interests" class="section-animate" aria-labelledby="interests-title">
+      <h2 class="section-title" id="interests-title">stuff i'm into</h2>
+
+      <div class="interests-grid" role="list" aria-label="Dawn's interests">
+        <article class="interest-card" role="listitem" tabindex="0">
+          <div class="interest-icon" aria-hidden="true">
+            <iconify-icon icon="mdi:palette"></iconify-icon>
+          </div>
+          <h3 class="interest-title">designing things</h3>
+          <p class="interest-desc">editing pictures and videos, I like anything pretty :3</p>
+          <div class="interest-tags" role="list" aria-label="Design-related tags">
+            <span class="tech-tag" role="listitem">aesthetics</span>
+            <span class="tech-tag" role="listitem">visual stuff</span>
+          </div>
+        </article>
+
+        <article class="interest-card" role="listitem" tabindex="0">
+          <div class="interest-icon" aria-hidden="true">
+            <iconify-icon icon="mdi:book-open-page-variant"></iconify-icon>
+          </div>
+          <h3 class="interest-title">philosophy</h3>
+          <p class="interest-desc">I ask myself alot of questions</p>
+          <div class="interest-tags" role="list" aria-label="Philosophy-related tags">
+            <span class="tech-tag" role="listitem">existential crisis</span>
+            <span class="tech-tag" role="listitem">abstract thinking</span>
+          </div>
+        </article>
+
+        <article class="interest-card" role="listitem" tabindex="0">
+          <div class="interest-icon" aria-hidden="true">
+            <iconify-icon icon="mdi:soccer"></iconify-icon>
+          </div>
+          <h3 class="interest-title">sports</h3>
+          <p class="interest-desc">mainly football as my goal is to become a footballer</p>
+          <div class="interest-tags" role="list" aria-label="Sports-related tags">
+            <span class="tech-tag" role="listitem">athleticism</span>
+            <span class="tech-tag" role="listitem">ego</span>
+          </div>
+        </article>
+
+        <article class="interest-card" role="listitem" tabindex="0">
+          <div class="interest-icon" aria-hidden="true">
+            <iconify-icon icon="mdi:atom"></iconify-icon>
+          </div>
+          <h3 class="interest-title">science</h3>
+          <p class="interest-desc">neuroscience, quantum physics and more</p>
+          <div class="interest-tags" role="list" aria-label="Science-related tags">
+            <span class="tech-tag" role="listitem">physics</span>
+            <span class="tech-tag" role="listitem">biology</span>
+          </div>
+        </article>
+
+        <article class="interest-card" role="listitem" tabindex="0">
+          <div class="interest-icon" aria-hidden="true">
+            <iconify-icon icon="mdi:controller-classic"></iconify-icon>
+          </div>
+          <h3 class="interest-title">gayming</h3>
+          <p class="interest-desc">I like playing chill games with friends or by myself</p>
+          <div class="interest-tags" role="list" aria-label="Gaming-related tags">
+            <span class="tech-tag" role="listitem">teamplay</span>
+            <span class="tech-tag" role="listitem">friendly</span>
+          </div>
+        </article>
+
+        <article class="interest-card" role="listitem" tabindex="0">
+          <div class="interest-icon" aria-hidden="true">
+            <iconify-icon icon="mdi:dots-horizontal"></iconify-icon>
+          </div>
+          <h3 class="interest-title">other stuff</h3>
+          <p class="interest-desc">honestly if you're curious about anything else you can ask</p>
+          <div class="interest-tags" role="list" aria-label="Miscellaneous tags">
+            <span class="tech-tag" role="listitem">curious</span>
+            <span class="tech-tag" role="listitem">easily distracted</span>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Links Section -->
+    <section id="links" class="section-animate" aria-labelledby="links-title">
+      <h2 class="section-title" id="links-title">find me</h2>
+
+      <div class="link-grid" role="list" aria-label="Social media and contact links">
+        <a class="link-card" 
+           href="https://open.spotify.com/user/31bl3e6upy4p3k3d7f22lmlvddhu" 
+           target="_blank" 
+           rel="noopener noreferrer" 
+           role="listitem"
+           aria-label="Visit Dawn's Spotify profile">
+          <span class="icon-circle spotify">
+            <iconify-icon icon="mdi:spotify" aria-hidden="true"></iconify-icon>
+          </span>
+          <div class="link-content">
+            <div class="link-title">spotify</div>
+            <div class="link-subtitle">my music taste</div>
+          </div>
+        </a>
+
+        <a class="link-card" 
+           href="https://www.tiktok.com/@dwnless_" 
+           target="_blank" 
+           rel="noopener noreferrer" 
+           role="listitem"
+           aria-label="Visit Dawn's TikTok profile">
+          <span class="icon-circle tiktok">
+            <iconify-icon icon="simple-icons:tiktok" aria-hidden="true"></iconify-icon>
+          </span>
+          <div class="link-content">
+            <div class="link-title">tiktok</div>
+            <div class="link-subtitle">reposts and stuff</div>
+          </div>
+        </a>
+
+        <a class="link-card" 
+           href="https://www.instagram.com/dwnless/" 
+           target="_blank" 
+           rel="noopener noreferrer" 
+           role="listitem"
+           aria-label="Visit Dawn's Instagram profile">
+          <span class="icon-circle instagram">
+            <iconify-icon icon="mdi:instagram" aria-hidden="true"></iconify-icon>
+          </span>
+          <div class="link-content">
+            <div class="link-title">instagram</div>
+            <div class="link-subtitle">used rarely</div>
+          </div>
+        </a>
+
+        <a class="link-card" 
+           href="https://x.com/dwnless" 
+           target="_blank" 
+           rel="noopener noreferrer" 
+           role="listitem"
+           aria-label="Visit Dawn's X (Twitter) profile">
+          <span class="icon-circle twitter">
+            <iconify-icon icon="mdi:twitter" aria-hidden="true"></iconify-icon>
+          </span>
+          <div class="link-content">
+            <div class="link-title">twitter/x</div>
+            <div class="link-subtitle">pics and posts</div>
+          </div>
+        </a>
+
+        <a class="link-card" 
+           href="https://brght.org/profile/dawn-Dvuoe5Hj/" 
+           target="_blank" 
+           rel="noopener noreferrer" 
+           role="listitem"
+           aria-label="View Dawn's IQ scores on BRGHT">
+          <span class="icon-circle brght">
+            <iconify-icon icon="mdi:brain" aria-hidden="true"></iconify-icon>
+          </span>
+          <div class="link-content">
+            <div class="link-title">iq scores</div>
+            <div class="link-subtitle">not that interesting</div>
+          </div>
+        </a>
+
+        <!-- Discord expandable card -->
+        <div class="link-card discord-main" 
+             id="discordCard" 
+             role="button" 
+             tabindex="0" 
+             aria-expanded="false" 
+             aria-controls="discordSubcards" 
+             aria-label="Discord contact options - click to expand">
+          <span class="icon-circle discord">
+            <iconify-icon icon="mdi:discord" aria-hidden="true"></iconify-icon>
+          </span>
+          <div class="link-content">
+            <div class="link-title">discord</div>
+            <div class="link-subtitle">click to expand</div>
+          </div>
+          <div class="expand-indicator" aria-hidden="true">
+            <iconify-icon icon="mdi:chevron-down"></iconify-icon>
+          </div>
+        </div>
+
+        <!-- Discord sub-cards -->
+        <div id="discordSubcards" class="discord-subcards" aria-hidden="true">
+          <button type="button" 
+                  class="link-card discord-subcard" 
+                  id="discordCopyUser" 
+                  aria-label="Copy Discord username: dwnless">
+            <span class="icon-circle discord-sub">
+              <iconify-icon icon="mdi:account" aria-hidden="true"></iconify-icon>
+            </span>
+            <div class="link-content">
+              <div class="link-title">copy user</div>
+              <div class="link-subtitle">dwnless</div>
+            </div>
+          </button>
+
+          <button type="button" 
+                  class="link-card discord-subcard" 
+                  id="discordCopyUid" 
+                  aria-label="Copy Discord UID: 1376650471900450827">
+            <span class="icon-circle discord-sub">
+              <iconify-icon icon="mdi:identifier" aria-hidden="true"></iconify-icon>
+            </span>
+            <div class="link-content">
+              <div class="link-title">copy uid</div>
+              <div class="link-subtitle">1376650471900450827</div>
+            </div>
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer section-animate" role="contentinfo">
+    <div class="container footer-content">
+      <div class="footer-text">dawn • i love men</div>
+      <a href="#top" class="footer-link" aria-label="Back to top of page">
+        back up ↑
+      </a>
+    </div>
+  </footer>
+
+  <!-- Toast notification for copy feedback -->
+  <div id="toast" class="toast" role="alert" aria-live="polite" aria-atomic="true">
+    <span id="toastMessage"></span>
+  </div>
+
+  <!-- JavaScript -->
+  <script src="js/main.js" defer></script>
+</body>
+</html>
