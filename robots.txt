@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://dwnless.github.io/web/sitemap.xml
+
+# Crawl-delay (be nice to the server)
+Crawl-delay: 1

@@ -97,7 +97,7 @@ body {
 }
 
 /* =========================
-   ACCESSIBILITY
+   ACCESSIBILITY & PERFORMANCE
 ========================= */
 .sr-only {
   position: absolute;
@@ -132,6 +132,28 @@ body {
   outline: 2px solid var(--brand-primary);
   outline-offset: 2px;
   border-radius: var(--radius-sm);
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  :root {
+    --brand-primary: #e91e63;
+    --text-primary: #000000;
+    --text-muted: #333333;
+    --border-medium: rgba(0, 0, 0, 0.8);
+  }
 }
 
 /* =========================
