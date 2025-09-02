@@ -17,6 +17,7 @@ function initializeApp() {
     initPerformanceOptimizations();
     initAnalytics();
     initThemeSupport();
+    initProjectFilters(); // Add project filtering functionality
   } catch (error) {
     console.error('Initialization error:', error);
   }
@@ -693,3 +694,46 @@ function initDiscordExpansionGrid() {
     }
   });
 }
+
+/* =========================
+   PROJECT FILTERING
+========================= */
+function initProjectFilters() {
+  const filterButtons = document.querySelectorAll('.filter-btn');
+  const projectCards = document.querySelectorAll('.project-card');
+  
+  if (!filterButtons.length || !projectCards.length) return;
+  
+  filterButtons.forEach(button => {
+    button.addEventListener('click', function() {
+      const category = this.getAttribute('data-category');
+      
+      // Update active button
+      filterButtons.forEach(btn => btn.classList.remove('active'));
+      this.classList.add('active');
+      
+      // Filter projects
+      projectCards.forEach(card => {
+        const cardCategory = card.getAttribute('data-category');
+        
+        if (category === 'all' || cardCategory === category) {
+          card.classList.remove('hidden');
+          card.style.display = 'block';
+        } else {
+          card.classList.add('hidden');
+          card.style.display = 'none';
+        }
+      });
+      
+      // Add animation delay for visible cards
+      const visibleCards = document.querySelectorAll('.project-card:not(.hidden)');
+      visibleCards.forEach((card, index) => {
+        card.style.animationDelay = `${index * 0.1}s`;
+      });
+    });
+  });
+}
+
+/* =========================
+   THEME SUPPORT & ANALYTICS
+========================= */
