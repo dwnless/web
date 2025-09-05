@@ -11,3 +11,5 @@ built with html/css/js + poppins font + iconify icons
   - Simple Icons - [CC0 1.0](https://github.com/simple-icons/simple-icons/blob/develop/LICENSE.md)
 
 - **JavaScript libraries** - Iconify for icon rendering
+
+.
