@@ -1,13 +1,13 @@
-// ...existing code...
 /* Replaced main.js: cleaned implementations for countdown, discord expansion, copy, scrolling, animations, etc. */
 
 document.addEventListener('DOMContentLoaded', function() {
   initializeApp();
+  initLandingOverlay();
 });
 
 function initializeApp() {
   try {
-    initHeartAnimation();
+    // Don't initialize hearts immediately - wait for landing to finish
     initCountdown();
     initDiscordExpansion();
     initCopyFunctionality();
@@ -15,29 +15,191 @@ function initializeApp() {
     initSmoothScroll();
     initKeyboardNavigation();
     initPerformanceOptimizations();
-    initAnalytics();
-    initThemeSupport();
+    initMusicPlayer();
   } catch (error) {
     console.error('Initialization error:', error);
   }
 }
 
 /* =========================
+   LANDING OVERLAY
+========================= */
+function initLandingOverlay() {
+  const overlay = document.getElementById('landingOverlay');
+  const body = document.body;
+  
+  if (!overlay) {
+    // No landing overlay, just initialize everything normally
+    initHeartAnimation();
+    return;
+  }
+  
+  generateLandingHearts();
+  
+  // REMOVE blur-active immediately so content loads normally
+  body.classList.remove('blur-active');
+  
+  function enterPortfolio() {
+    const audio = document.getElementById('backgroundMusic');
+    const playPauseBtn = document.getElementById('playPauseBtn');
+    
+    overlay.style.pointerEvents = 'none';
+    
+    if (audio) {
+      audio.volume = 0;
+      audio.play().catch(err => console.log('Audio error:', err));
+    }
+    
+    overlay.classList.add('hidden');
+    
+    if (audio) {
+      const sliderValue = document.getElementById('volumeSlider')?.value || 50;
+      const targetVolume = Math.max(0, Math.min(1, parseFloat(sliderValue) / 100));
+      fadeAudioVolume(audio, 0, targetVolume, 500);
+      
+      if (playPauseBtn) {
+        playPauseBtn.classList.add('playing');
+      }
+    }
+    
+    // Start hearts after overlay is gone
+    setTimeout(() => {
+      initHeartAnimation();
+    }, 600);
+    
+    setTimeout(() => {
+      if (overlay && overlay.parentNode) {
+        overlay.remove();
+      }
+    }, 650);
+  }
+  
+  // Helper function to smoothly fade audio volume
+  function fadeAudioVolume(audioElement, startVolume, endVolume, duration) {
+    if (!audioElement) return;
+    
+    // Clamp values between 0 and 1
+    startVolume = Math.max(0, Math.min(1, startVolume));
+    endVolume = Math.max(0, Math.min(1, endVolume));
+    
+    const startTime = performance.now();
+    audioElement.volume = startVolume;
+    
+    function updateVolume(currentTime) {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      
+      const newVolume = startVolume + (progress * (endVolume - startVolume));
+      // Clamp the calculated volume between 0 and 1
+      audioElement.volume = Math.max(0, Math.min(1, newVolume));
+      
+      if (progress < 1) {
+        requestAnimationFrame(updateVolume);
+      }
+    }
+    
+    requestAnimationFrame(updateVolume);
+  }
+  
+  // Click anywhere on overlay to enter
+  overlay.addEventListener('click', (e) => {
+    e.preventDefault();
+    enterPortfolio();
+  });
+  
+  // Enter key to enter
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !overlay.classList.contains('hidden')) {
+      e.preventDefault();
+      enterPortfolio();
+    }
+  });
+  
+  // Prevent any scrolling while overlay is active
+  document.addEventListener('wheel', function(e) {
+    if (!overlay.classList.contains('hidden')) {
+      e.preventDefault();
+    }
+  }, { passive: false });
+  
+  document.addEventListener('touchmove', function(e) {
+    if (!overlay.classList.contains('hidden')) {
+      e.preventDefault();
+    }
+  }, { passive: false });
+}
+
+function generateLandingHearts() {
+  const heartsContainer = document.querySelector('.landing-hearts');
+  if (!heartsContainer) return;
+  
+  // Clear existing hearts first
+  heartsContainer.innerHTML = '';
+  
+  const heartCount = 30;
+  const heartVariants = [
+    { color: '#ff9bbf', size: 15 },
+    { color: '#ff7fb0', size: 18 },
+    { color: '#ffa4c9', size: 12 },
+    { color: '#ff6ba3', size: 20 },
+    { color: '#ffb3d1', size: 14 },
+    { color: '#ff8bc1', size: 16 },
+    { color: '#ff5b9e', size: 22 },
+    { color: '#ffcde0', size: 13 }
+  ];
+  
+  // Generate falling hearts
+  for (let i = 0; i < heartCount; i++) {
+    const variant = heartVariants[Math.floor(Math.random() * heartVariants.length)];
+    const heart = document.createElement('div');
+    heart.className = 'landing-heart';
+    
+    // Random properties
+    const x = Math.random() * 100; // 0-100%
+    const duration = (Math.random() * 3 + 4); // 4-7 seconds
+    const delay = Math.random() * 10; // 0-10 seconds
+    const drift = (Math.random() - 0.5) * 120; // -60px to 60px drift
+    const rotation = (Math.random() - 0.5) * 360; // random rotation
+    
+    // Heart SVG with dynamic color
+    const heartSvg = `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${encodeURIComponent(variant.color)}"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>')`;
+    
+    // Set styles
+    heart.style.width = `${variant.size}px`;
+    heart.style.height = `${variant.size}px`;
+    heart.style.backgroundImage = heartSvg;
+    heart.style.setProperty('--x', `${x}%`);
+    heart.style.setProperty('--duration', `${duration}s`);
+    heart.style.setProperty('--delay', `${delay}s`);
+    heart.style.setProperty('--drift', `${drift}px`);
+    heart.style.setProperty('--rotation', `${rotation}deg`);
+    
+    heartsContainer.appendChild(heart);
+  }
+  
+  console.log(`Generated ${heartCount} glowing falling hearts with enhanced effects`);
+}
+
+/* =========================
    FLOATING HEARTS ANIMATION
-   (keeps original logic)
 ========================= */
 function initHeartAnimation() {
   const heartsContainer = document.querySelector('.hearts');
-  if (!heartsContainer) return;
+  if (!heartsContainer) {
+    console.warn('Hearts container not found');
+    return;
+  }
 
-  const config = {
+  // Use optimized config for OperaGX
+  const config = window.operaOptimizedConfig || {
     colors: ['a', 'b', 'c'],
     sizes: [18, 24, 32, 28],
-    count: 15,
+    count: 20,
     speeds: { min: 12, max: 25 }
   };
 
   heartsContainer.innerHTML = '';
+  
   for (let i = 0; i < config.count; i++) {
     createFloatingHeart(heartsContainer, config);
   }
@@ -51,7 +213,9 @@ function createFloatingHeart(container, config) {
   const size = config.sizes[Math.floor(Math.random() * config.sizes.length)];
   const speed = (Math.random() * (config.speeds.max - config.speeds.min) + config.speeds.min).toFixed(2);
   const delay = (Math.random() * 15).toFixed(2);
-  const horizontalPos = (Math.random() * 100).toFixed(3);
+  const horizontalPos = (Math.random() * 110 - 5).toFixed(3);
+  const driftDirection = Math.random() > 0.5 ? 1 : -1;
+  const driftAmount = (Math.random() * 20 + 5) * driftDirection;
 
   heart.dataset.color = color;
   heart.style.left = `${horizontalPos}%`;
@@ -59,12 +223,13 @@ function createFloatingHeart(container, config) {
   heart.style.height = `${size}px`;
   heart.style.animationDuration = `${speed}s`;
   heart.style.animationDelay = `${delay}s`;
+  heart.style.setProperty('--drift-x', `${driftAmount}px`);
 
   container.appendChild(heart);
 }
 
 /* =========================
-   BIRTHDAY COUNTDOWN
+   COUNTDOWN
 ========================= */
 function initCountdown() {
   const countdownEl = document.getElementById('countdown');
@@ -74,17 +239,15 @@ function initCountdown() {
     try {
       const now = new Date();
       const currentYear = now.getFullYear();
-      // Target date: October 7 (month index 9)
       let birthday = new Date(currentYear, 9, 7, 0, 0, 0, 0);
 
-      // If birthday this year already passed, use next year
       if (now > birthday) {
         birthday = new Date(currentYear + 1, 9, 7, 0, 0, 0, 0);
       }
 
       const timeDiff = birthday - now;
       if (timeDiff <= 0) {
-        countdownEl.textContent = '00:00:00:00';
+        countdownEl.textContent = '🎉 LEGAL! 🎉';
         countdownEl.setAttribute('aria-label', 'Birthday is today');
         return;
       }
@@ -111,14 +274,11 @@ function initCountdown() {
 
   updateCountdown();
   const id = setInterval(updateCountdown, 1000);
-
-  window.addEventListener('beforeunload', () => {
-    clearInterval(id);
-  });
+  window.addEventListener('beforeunload', () => clearInterval(id));
 }
 
 /* =========================
-   DISCORD EXPANSION (single robust impl)
+   DISCORD EXPANSION
 ========================= */
 function initDiscordExpansion() {
   const discordCard = document.getElementById('discordCard');
@@ -129,13 +289,6 @@ function initDiscordExpansion() {
     return;
   }
 
-  // Ensure initial collapsed styling for transition (CSS must allow transition on max-height)
-  discordSubcards.classList.remove('show');
-  discordSubcards.style.overflow = 'hidden';
-  discordSubcards.style.maxHeight = '0';
-  discordSubcards.style.transition = 'max-height 260ms ease, opacity 200ms ease';
-  discordSubcards.style.opacity = '0';
-
   function setExpanded(expand) {
     discordCard.setAttribute('aria-expanded', String(expand));
     discordSubcards.setAttribute('aria-hidden', String(!expand));
@@ -143,26 +296,9 @@ function initDiscordExpansion() {
     if (subtitle) subtitle.textContent = expand ? 'click to collapse' : 'click to expand';
 
     if (expand) {
-      // measure natural height
-      discordSubcards.style.display = 'block';
-      const natural = discordSubcards.scrollHeight;
-      // force reflow then expand
-      requestAnimationFrame(() => {
-        discordSubcards.style.maxHeight = natural + 'px';
-        discordSubcards.style.opacity = '1';
-        discordSubcards.classList.add('show');
-      });
+      discordSubcards.classList.add('show');
     } else {
-      // collapse
-      discordSubcards.style.maxHeight = '0';
-      discordSubcards.style.opacity = '0';
       discordSubcards.classList.remove('show');
-      // remove display after transition
-      setTimeout(() => {
-        if (discordSubcards.getAttribute('aria-hidden') === 'true') {
-          discordSubcards.style.display = '';
-        }
-      }, 300);
     }
 
     announceToScreenReader(expand ? 'Discord options expanded' : 'Discord options collapsed');
@@ -173,13 +309,11 @@ function initDiscordExpansion() {
     setExpanded(!isExpanded);
   }
 
-  // Click
   discordCard.addEventListener('click', (e) => {
     e.preventDefault();
     toggleDiscordExpansion();
   });
 
-  // Keyboard: Enter / Space to toggle, Escape to close
   discordCard.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
       e.preventDefault();
@@ -191,19 +325,11 @@ function initDiscordExpansion() {
     }
   });
 
-  // Close clicking outside
   document.addEventListener('click', (e) => {
     if (!discordCard.contains(e.target) && !discordSubcards.contains(e.target)) {
       setExpanded(false);
     }
   });
-
-  // Ensure height recalculation on resize if expanded
-  window.addEventListener('resize', debounce(() => {
-    if (discordCard.getAttribute('aria-expanded') === 'true') {
-      discordSubcards.style.maxHeight = discordSubcards.scrollHeight + 'px';
-    }
-  }, 200));
 }
 
 /* =========================
@@ -235,7 +361,7 @@ function initCopyFunctionality() {
 }
 
 async function copyToClipboard(text, label, buttonEl) {
-  const subtitleEl = buttonEl.querySelector('.link-subtitle');
+  const subtitleEl = buttonEl.querySelector('.copy-subtitle');
   const originalText = subtitleEl?.textContent || '';
 
   try {
@@ -313,9 +439,6 @@ function initScrollAnimations() {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         entry.target.classList.add('animate-in');
-      } else {
-        // optional: remove to allow re-triggering
-        // entry.target.classList.remove('animate-in');
       }
     });
   }, { threshold: 0.12, rootMargin: '0px 0px -50px 0px' });
@@ -327,7 +450,7 @@ function initScrollAnimations() {
    SMOOTH SCROLL
 ========================= */
 function initSmoothScroll() {
-  const navLinks = document.querySelectorAll('nav a[href^="#"], .btn[href^="#"], .footer-link[href^="#"]');
+  const navLinks = document.querySelectorAll('.btn[href^="#"], .footer-link[href^="#"]');
   navLinks.forEach(link => {
     link.addEventListener('click', function(e) {
       const href = this.getAttribute('href');
@@ -336,11 +459,6 @@ function initSmoothScroll() {
       if (target) {
         e.preventDefault();
         target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        // Move focus for accessibility
-        target.setAttribute('tabindex', '-1');
-        target.focus({ preventScroll: true });
-        // cleanup tabindex after a bit
-        setTimeout(() => target.removeAttribute('tabindex'), 1000);
       }
     });
   });
@@ -350,18 +468,6 @@ function initSmoothScroll() {
    KEYBOARD NAVIGATION
 ========================= */
 function initKeyboardNavigation() {
-  const interestCards = document.querySelectorAll('.interest-card');
-  interestCards.forEach(card => {
-    card.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
-        e.preventDefault();
-        this.click();
-      }
-      // support arrow navigation if desired (left/right)
-    });
-  });
-
-  // Global shortcuts
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
       const discordCard = document.getElementById('discordCard');
@@ -369,18 +475,114 @@ function initKeyboardNavigation() {
       const discordSubcards = document.getElementById('discordSubcards');
       if (discordSubcards) {
         discordSubcards.setAttribute('aria-hidden', 'true');
-        discordSubcards.style.maxHeight = '0';
-        discordSubcards.style.opacity = '0';
+        discordSubcards.classList.remove('show');
       }
     }
+  });
+}
 
-    // Alt + 1..4 quick nav (example)
-    if (e.altKey && !e.ctrlKey && !e.metaKey) {
-      if (e.key === '1') document.querySelector('#about')?.scrollIntoView({ behavior: 'smooth' });
-      if (e.key === '2') document.querySelector('#interests')?.scrollIntoView({ behavior: 'smooth' });
-      if (e.key === '3') document.querySelector('#links')?.scrollIntoView({ behavior: 'smooth' });
+/* =========================
+   MUSIC PLAYER
+========================= */
+function initMusicPlayer() {
+  const audio = document.getElementById('backgroundMusic');
+  const playPauseBtn = document.getElementById('playPauseBtn');
+  const volumeSlider = document.getElementById('volumeSlider');
+  const volumePercent = document.getElementById('volumePercent');
+  
+  if (!audio || !playPauseBtn || !volumeSlider || !volumePercent) return;
+
+  audio.volume = 0.5;
+  playPauseBtn.classList.remove('playing');
+  
+  playPauseBtn.addEventListener('click', () => {
+    if (audio.paused) {
+      audio.play().then(() => {
+        playPauseBtn.classList.add('playing');
+      }).catch(error => {
+        console.warn('Audio play failed:', error);
+        showToast('Music play failed - try clicking play again');
+      });
+    } else {
+      audio.pause();
+      playPauseBtn.classList.remove('playing');
     }
   });
+
+  volumeSlider.addEventListener('input', (e) => {
+    const volume = e.target.value / 100;
+    audio.volume = volume;
+    volumePercent.textContent = `${e.target.value}%`;
+    
+    const volumeIcon = document.querySelector('.volume-control iconify-icon');
+    if (volumeIcon) {
+      const iconMap = {
+        0: 'mdi:volume-mute',
+        0.5: 'mdi:volume-low',
+        1: 'mdi:volume-high'
+      };
+      volumeIcon.setAttribute('icon', volume === 0 ? iconMap[0] : volume < 0.5 ? iconMap[0.5] : iconMap[1]);
+    }
+  });
+
+  ['error', 'play', 'pause'].forEach(event => {
+    audio.addEventListener(event, () => {
+      if (event === 'error') {
+        console.warn('Audio error');
+        showToast('Music file could not be loaded');
+        playPauseBtn.classList.remove('playing');
+      } else {
+        playPauseBtn.classList.toggle('playing', event === 'play');
+      }
+    });
+  });
+}
+
+/* =========================
+   PERFORMANCE OPTIMIZATIONS
+========================= */
+function initPerformanceOptimizations() {
+  // Detect OperaGX and reduce animations
+  const isOperaGX = navigator.userAgent.includes('OPR') || navigator.userAgent.includes('Opera');
+  
+  if (isOperaGX) {
+    document.documentElement.style.setProperty('--transition', '0.15s ease');
+    // Reduce heart count for OperaGX
+    const config = {
+      colors: ['a', 'b', 'c'],
+      sizes: [18, 24, 28],
+      count: 10, // Reduced from 20
+      speeds: { min: 15, max: 20 } // Faster animations
+    };
+    
+    // Store reduced config for heart animation
+    window.operaOptimizedConfig = config;
+  }
+
+  document.querySelectorAll('img').forEach(img => {
+    img.addEventListener('error', function() {
+      console.warn(`Failed to load image: ${this.src}`);
+      Object.assign(this.style, {
+        background: 'linear-gradient(135deg, var(--sky-secondary), var(--sky-tertiary))',
+        display: 'grid',
+        placeItems: 'center'
+      });
+      this.innerHTML = '📷';
+    });
+  });
+
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  if (prefersReducedMotion.matches) {
+    document.documentElement.style.setProperty('--transition', '0.01ms');
+  }
+  
+  // Force layout optimization
+  if (isOperaGX) {
+    document.body.style.willChange = 'transform';
+    setTimeout(() => {
+      document.body.style.willChange = 'auto';
+    }, 2000);
+  }
 }
 
 /* =========================
@@ -393,303 +595,5 @@ function announceToScreenReader(message) {
   announcement.setAttribute('aria-atomic', 'true');
   announcement.textContent = message;
   document.body.appendChild(announcement);
-  setTimeout(() => {
-    if (announcement && announcement.parentNode) document.body.removeChild(announcement);
-  }, 1200);
-}
-
-function debounce(func, wait = 200) {
-  let timeout;
-  return function executedFunction(...args) {
-    const later = () => {
-      clearTimeout(timeout);
-      func.apply(this, args);
-    };
-    clearTimeout(timeout);
-    timeout = setTimeout(later, wait);
-  };
-}
-
-/* =========================
-   PERFORMANCE
-========================= */
-function initPerformanceOptimizations() {
-  // Lazy load images with loading="lazy"
-  const images = document.querySelectorAll('img[loading="lazy"]');
-  if ('IntersectionObserver' in window && images.length) {
-    const imgObserver = new IntersectionObserver((entries, obs) => {
-      entries.forEach(entry => {
-        if (!entry.isIntersecting) return;
-        const img = entry.target;
-        // if data-src exists, swap
-        const dataSrc = img.getAttribute('data-src');
-        if (dataSrc) {
-          img.src = dataSrc;
-          img.removeAttribute('data-src');
-        }
-        imgObserver.unobserve(img);
-      });
-    }, { rootMargin: '200px' });
-
-    images.forEach(img => imgObserver.observe(img));
-  }
-
-  // Reduced motion adjustments
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-  if (prefersReducedMotion.matches) {
-    document.documentElement.style.setProperty('--transition-fast', '0.01ms');
-    document.documentElement.style.setProperty('--transition-base', '0.01ms');
-    document.documentElement.style.setProperty('--transition-slow', '0.01ms');
-  }
-}
-
-/* =========================
-   ANALYTICS (minimal)
-========================= */
-function initAnalytics() {
-  const counters = { pageViews: 0, linkClicks: 0, discordExpansions: 0, copies: 0 };
-
-  document.addEventListener('visibilitychange', function() {
-    if (!document.hidden) counters.pageViews++;
-  });
-
-  document.addEventListener('click', function(e) {
-    const target = e.target.closest('a, button, [role="button"]');
-    if (!target) return;
-    if (target.classList.contains('discord-main')) counters.discordExpansions++;
-    if (target.id && target.id.startsWith('discordCopy')) counters.copies++;
-    if (target.tagName === 'A' && target.href && target.href.startsWith('http')) counters.linkClicks++;
-    // (store/send counters as needed, privacy-first)
-  });
-}
-
-/* =========================
-   THEME SUPPORT
-========================= */
-function initThemeSupport() {
-  const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
-  function handleThemeChange(e) {
-    document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
-  }
-  handleThemeChange(darkModeQuery);
-  if (darkModeQuery.addEventListener) darkModeQuery.addEventListener('change', handleThemeChange);
-}
-// ...existing code...
-
-// =========================
-// ANALYTICS & INSIGHTS (Privacy-Friendly)
-// =========================
-function initAnalytics() {
-  // Privacy-friendly interaction tracking (no personal data)
-  const interactions = {
-    pageViews: 0,
-    linkClicks: 0,
-    discordExpansions: 0,
-    copies: 0
-  };
-  
-  // Track page visibility
-  document.addEventListener('visibilitychange', function() {
-    if (!document.hidden) {
-      interactions.pageViews++;
-    }
-  });
-  
-  // Track interaction patterns (anonymous)
-  document.addEventListener('click', function(e) {
-    const target = e.target.closest('a, button, [role="button"]');
-    if (!target) return;
-    
-    if (target.href && target.href.includes('http')) {
-      interactions.linkClicks++;
-    } else if (target.id === 'discordCard') {
-      interactions.discordExpansions++;
-    } else if (target.id?.includes('Copy')) {
-      interactions.copies++;
-    }
-  });
-}
-
-// Initialize theme and analytics
-document.addEventListener('DOMContentLoaded', function() {
-  initThemeSupport();
-  initAnalytics();
-  initPerformanceOptimizations();
-});
-// Enhanced Discord expansion with smooth collapse animation
-function initDiscordExpansion() {
-  const discordCard = document.getElementById('discordCard');
-  const discordSubcards = document.getElementById('discordSubcards');
-  
-  if (!discordCard || !discordSubcards) {
-    console.warn('Discord elements not found');
-    return;
-  }
-
-  // Store the natural height for smooth animations
-  let naturalHeight = 0;
-  
-  // Calculate natural height after DOM is ready
-  setTimeout(() => {
-    discordSubcards.style.display = 'flex';
-    discordSubcards.style.flexDirection = 'column';
-    discordSubcards.style.visibility = 'hidden';
-    discordSubcards.style.maxHeight = 'none';
-    discordSubcards.style.opacity = '1';
-    
-    naturalHeight = discordSubcards.scrollHeight;
-    
-    // Reset to collapsed state
-    discordSubcards.style.display = '';
-    discordSubcards.style.visibility = '';
-    discordSubcards.style.maxHeight = '';
-    discordSubcards.style.opacity = '';
-    discordSubcards.classList.remove('show');
-  }, 100);
-
-  function toggleDiscordExpansion(expand = null) {
-    const isCurrentlyExpanded = discordCard.getAttribute('aria-expanded') === 'true';
-    const shouldExpand = expand !== null ? expand : !isCurrentlyExpanded;
-    
-    discordCard.setAttribute('aria-expanded', String(shouldExpand));
-    discordSubcards.setAttribute('aria-hidden', String(!shouldExpand));
-    
-    if (shouldExpand) {
-      // Expanding
-      discordSubcards.style.display = 'flex';
-      discordSubcards.style.flexDirection = 'column';
-      
-      // Force reflow
-      discordSubcards.offsetHeight;
-      
-      // Update CSS custom property for the actual height
-      discordSubcards.style.maxHeight = `${naturalHeight || 200}px`;
-      discordSubcards.classList.add('show');
-      
-    } else {
-      // Collapsing
-      discordSubcards.style.maxHeight = `${discordSubcards.scrollHeight}px`;
-      
-      // Force reflow
-      discordSubcards.offsetHeight;
-      
-      // Start collapse animation
-      discordSubcards.style.maxHeight = '0';
-      discordSubcards.classList.remove('show');
-      
-      // Clean up after animation
-      setTimeout(() => {
-        if (discordCard.getAttribute('aria-expanded') === 'false') {
-          discordSubcards.style.display = '';
-        }
-      }, 400); // Match your CSS transition duration
-    }
-    
-    // Update subtitle text
-    const subtitle = discordCard.querySelector('.link-subtitle');
-    if (subtitle) {
-      subtitle.textContent = shouldExpand ? 'click to collapse' : 'click to expand';
-    }
-    
-    // Announce change to screen readers
-    announceToScreenReader(shouldExpand ? 'Discord options expanded' : 'Discord options collapsed');
-  }
-
-  // Click handler
-  discordCard.addEventListener('click', (e) => {
-    e.preventDefault();
-    toggleDiscordExpansion();
-  });
-
-  // Keyboard support
-  discordCard.addEventListener('keydown', function(e) {
-    switch(e.key) {
-      case 'Enter':
-      case ' ':
-        e.preventDefault();
-        toggleDiscordExpansion();
-        break;
-      case 'Escape':
-        e.preventDefault();
-        toggleDiscordExpansion(false);
-        break;
-    }
-  });
-  
-  // Close on outside click
-  document.addEventListener('click', function(e) {
-    if (!discordCard.contains(e.target) && !discordSubcards.contains(e.target)) {
-      toggleDiscordExpansion(false);
-    }
-  });
-  
-  // Recalculate height on window resize
-  window.addEventListener('resize', debounce(() => {
-    if (discordCard.getAttribute('aria-expanded') === 'true') {
-      discordSubcards.style.maxHeight = 'none';
-      naturalHeight = discordSubcards.scrollHeight;
-      discordSubcards.style.maxHeight = `${naturalHeight}px`;
-    }
-  }, 250));
-}
-
-// Alternative implementation using CSS Grid (more reliable)
-function initDiscordExpansionGrid() {
-  const discordCard = document.getElementById('discordCard');
-  const discordSubcards = document.getElementById('discordSubcards');
-  
-  if (!discordCard || !discordSubcards) {
-    console.warn('Discord elements not found');
-    return;
-  }
-
-  // Add the grid-based classes
-  discordSubcards.classList.add('discord-subcards-grid');
-  
-  // Wrap the content for the grid method
-  const existingContent = discordSubcards.innerHTML;
-  discordSubcards.innerHTML = `<div class="discord-subcards-inner">${existingContent}</div>`;
-  
-  function toggleDiscordExpansion(expand = null) {
-    const isCurrentlyExpanded = discordCard.getAttribute('aria-expanded') === 'true';
-    const shouldExpand = expand !== null ? expand : !isCurrentlyExpanded;
-    
-    discordCard.setAttribute('aria-expanded', String(shouldExpand));
-    discordSubcards.setAttribute('aria-hidden', String(!shouldExpand));
-    discordSubcards.classList.toggle('show', shouldExpand);
-    
-    // Update subtitle text
-    const subtitle = discordCard.querySelector('.link-subtitle');
-    if (subtitle) {
-      subtitle.textContent = shouldExpand ? 'click to collapse' : 'click to expand';
-    }
-    
-    announceToScreenReader(shouldExpand ? 'Discord options expanded' : 'Discord options collapsed');
-  }
-
-  // Same event handlers as before...
-  discordCard.addEventListener('click', (e) => {
-    e.preventDefault();
-    toggleDiscordExpansion();
-  });
-
-  discordCard.addEventListener('keydown', function(e) {
-    switch(e.key) {
-      case 'Enter':
-      case ' ':
-        e.preventDefault();
-        toggleDiscordExpansion();
-        break;
-      case 'Escape':
-        e.preventDefault();
-        toggleDiscordExpansion(false);
-        break;
-    }
-  });
-  
-  document.addEventListener('click', function(e) {
-    if (!discordCard.contains(e.target) && !discordSubcards.contains(e.target)) {
-      toggleDiscordExpansion(false);
-    }
-  });
+  setTimeout(() => announcement?.remove(), 1200);
 }
