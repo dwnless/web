@@ -501,6 +501,18 @@ section { padding: var(--space-xl) 0; }
   display: flex;
   flex-direction: column;
   justify-content: center;
+  cursor: pointer;
+}
+
+.stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-strong);
+  background: linear-gradient(135deg, var(--glass-strong), var(--sky-secondary));
+}
+
+.stat-card:hover .stat-number {
+  text-shadow: 0 0 15px rgba(255, 91, 158, 0.8), 0 0 25px rgba(255, 91, 158, 0.5);
+  filter: brightness(1.1);
 }
 
 .stat-number {
@@ -1218,8 +1230,5 @@ input:focus, textarea:focus, select:focus {
 
 /* Disable some effects on OperaGX specifically */
 @media screen and (-webkit-min-device-pixel-ratio: 0) {
-  .hero-card::before,
-  .tag-ego::before {
-    animation: none;
-  }
+  /* REMOVED - bringing back shimmer animations */
 }

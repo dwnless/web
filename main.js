@@ -190,12 +190,12 @@ function initHeartAnimation() {
     return;
   }
 
-  // Use optimized config for OperaGX
-  const config = window.operaOptimizedConfig || {
+  // BACK TO FULL CONFIG - no more optimization bullshit
+  const config = {
     colors: ['a', 'b', 'c'],
     sizes: [18, 24, 32, 28],
-    count: 20,
-    speeds: { min: 12, max: 25 }
+    count: 20, // BACK TO 20
+    speeds: { min: 12, max: 25 } // BACK TO ORIGINAL SPEEDS
   };
 
   heartsContainer.innerHTML = '';
@@ -542,23 +542,6 @@ function initMusicPlayer() {
    PERFORMANCE OPTIMIZATIONS
 ========================= */
 function initPerformanceOptimizations() {
-  // Detect OperaGX and reduce animations
-  const isOperaGX = navigator.userAgent.includes('OPR') || navigator.userAgent.includes('Opera');
-  
-  if (isOperaGX) {
-    document.documentElement.style.setProperty('--transition', '0.15s ease');
-    // Reduce heart count for OperaGX
-    const config = {
-      colors: ['a', 'b', 'c'],
-      sizes: [18, 24, 28],
-      count: 10, // Reduced from 20
-      speeds: { min: 15, max: 20 } // Faster animations
-    };
-    
-    // Store reduced config for heart animation
-    window.operaOptimizedConfig = config;
-  }
-
   document.querySelectorAll('img').forEach(img => {
     img.addEventListener('error', function() {
       console.warn(`Failed to load image: ${this.src}`);
@@ -574,14 +557,6 @@ function initPerformanceOptimizations() {
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   if (prefersReducedMotion.matches) {
     document.documentElement.style.setProperty('--transition', '0.01ms');
-  }
-  
-  // Force layout optimization
-  if (isOperaGX) {
-    document.body.style.willChange = 'transform';
-    setTimeout(() => {
-      document.body.style.willChange = 'auto';
-    }, 2000);
   }
 }
 
