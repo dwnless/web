@@ -1,6 +1,6 @@
 # dawn's website :3
 
-personal portfolio with pink hearts and vibes
+
 
 built with html/css/js + poppins font + iconify icons
 
@@ -9,4 +9,5 @@ built with html/css/js + poppins font + iconify icons
 - **Icons** - [Iconify](https://iconify.design/) ([MIT License](https://github.com/iconify/iconify/blob/main/license.txt))
   - Material Design Icons - [Apache 2.0](https://github.com/Templarian/MaterialDesign/blob/master/LICENSE)
   - Simple Icons - [CC0 1.0](https://github.com/simple-icons/simple-icons/blob/develop/LICENSE.md)
+
 - **JavaScript libraries** - Iconify for icon rendering
