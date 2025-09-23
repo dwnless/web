@@ -16,7 +16,7 @@
   <link rel="stylesheet" href="style.css">
 
   <!-- Icons -->
-  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="icon" type="image/png" href="favicon1.png">
   <script src="https://code.iconify.design/iconify-icon/1.0.8/iconify-icon.min.js" defer></script>
 </head>
 
@@ -50,6 +50,11 @@
         <span class="logo-icon" aria-hidden="true">♥</span>
         <span class="logo-text">dawn :3</span>
       </a>
+      
+      <div class="theme-switch-container">
+        <input type="checkbox" name="themeCheckbox" id="themeCheckbox" />
+        <label for="themeCheckbox" class="theme-switch-label" aria-label="Toggle theme"></label>
+      </div>
     </div>
   </header>
 
@@ -65,6 +70,7 @@
                  aria-hidden="true"></div>
             <div class="avatar-wrap">
               <img class="avatar" 
+                   id="avatarImage"
                    src="bleh.png" 
                    alt="Dawn's avatar"
                    loading="eager">
@@ -98,7 +104,11 @@
             <h1 class="title">
               dawn
               <iconify-icon icon="mdi:check-decagram" class="verified-icon" aria-label="verified"></iconify-icon>
+              <a href="https://guns.lol/dwnless" target="_blank" rel="noopener noreferrer" class="gun-link" aria-label="View guns.lol profile">
+                <img src="gunslight.png" alt="guns.lol" class="gun-icon" id="gunIcon" />
+              </a>
             </h1>
+
             <p class="hero-subtitle">
               a clueless puppy boy 
               <img src="puppy.png" alt="cute puppy" class="puppy-image" />
@@ -127,7 +137,7 @@
             <div class="stat-number" id="countdown" aria-live="polite">
               Loading...
             </div>
-            <div class="stat-label">TIME UNTIL IM LEGAL 🎂🍾</div>
+            <div class="stat-label">time until I turn 18</div>
           </div>
         </div>
 

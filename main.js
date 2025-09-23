@@ -3,6 +3,7 @@
 document.addEventListener('DOMContentLoaded', function() {
   initializeApp();
   initLandingOverlay();
+  initThemeToggle();
 });
 
 function initializeApp() {
@@ -16,8 +17,79 @@ function initializeApp() {
     initKeyboardNavigation();
     initPerformanceOptimizations();
     initMusicPlayer();
+    initGunTooltip(); // Add this line
   } catch (error) {
     console.error('Initialization error:', error);
+  }
+}
+
+/* =========================
+   THEME TOGGLE
+========================= */
+function initThemeToggle() {
+  const themeCheckbox = document.getElementById('themeCheckbox');
+  const avatarImage = document.getElementById('avatarImage');
+  
+  // Load saved theme or default to light
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  setTheme(savedTheme);
+
+  if (themeCheckbox) {
+    themeCheckbox.addEventListener('change', toggleTheme);
+  }
+
+  function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+    setTheme(newTheme);
+    localStorage.setItem('theme', newTheme);
+  }
+
+  function setTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    
+    // Update checkbox state to match theme
+    if (themeCheckbox) {
+      themeCheckbox.checked = theme === 'dark';
+    }
+    
+    // Update avatar based on theme
+    if (avatarImage) {
+      avatarImage.src = theme === 'dark' ? '333.png' : 'bleh.png';
+    }
+    
+    // Update gun icon based on theme
+    const gunIcon = document.getElementById('gunIcon');
+    if (gunIcon) {
+      gunIcon.src = theme === 'dark' ? 'gunsdark.png' : 'gunslight.png';
+    }
+    
+    // Update favicon based on theme
+    updateFavicon(theme);
+    
+    // Update existing heart colors without regenerating them
+    updateHeartColors(theme);
+    
+    // Update landing hearts colors without regenerating them
+    updateLandingHeartColors(theme);
+    
+    announceToScreenReader(`Switched to ${theme} theme`);
+  }
+
+  function updateFavicon(theme) {
+    const favicon = document.querySelector('link[rel="icon"]') || document.querySelector('link[rel="shortcut icon"]');
+    
+    if (favicon) {
+      // Update existing favicon
+      favicon.href = theme === 'dark' ? 'favicon2.png' : 'favicon1.png';
+    } else {
+      // Create favicon if it doesn't exist
+      const newFavicon = document.createElement('link');
+      newFavicon.rel = 'icon';
+      newFavicon.type = 'image/png';
+      newFavicon.href = theme === 'dark' ? 'favicon2.png' : 'favicon1.png';
+      document.head.appendChild(newFavicon);
+    }
   }
 }
 
@@ -137,7 +209,19 @@ function generateLandingHearts() {
   heartsContainer.innerHTML = '';
   
   const heartCount = 30;
-  const heartVariants = [
+  const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+  
+  // Theme-specific heart colors
+  const heartVariants = currentTheme === 'dark' ? [
+    { color: '#1e3a8a', size: 15 },
+    { color: '#3b82f6', size: 18 },
+    { color: '#60a5fa', size: 12 },
+    { color: '#93c5fd', size: 20 },
+    { color: '#2563eb', size: 14 },
+    { color: '#1e40af', size: 16 },
+    { color: '#1d4ed8', size: 22 },
+    { color: '#dbeafe', size: 13 }
+  ] : [
     { color: '#ff9bbf', size: 15 },
     { color: '#ff7fb0', size: 18 },
     { color: '#ffa4c9', size: 12 },
@@ -177,7 +261,7 @@ function generateLandingHearts() {
     heartsContainer.appendChild(heart);
   }
   
-  console.log(`Generated ${heartCount} glowing falling hearts with enhanced effects`);
+  console.log(`Generated ${heartCount} ${currentTheme} theme falling hearts`);
 }
 
 /* =========================
@@ -190,22 +274,24 @@ function initHeartAnimation() {
     return;
   }
 
-  // BACK TO FULL CONFIG - no more optimization bullshit
+  // Get the current theme (which should be set by now from localStorage)
+  const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+
   const config = {
     colors: ['a', 'b', 'c'],
     sizes: [18, 24, 32, 28],
-    count: 20, // BACK TO 20
-    speeds: { min: 12, max: 25 } // BACK TO ORIGINAL SPEEDS
+    count: 20,
+    speeds: { min: 12, max: 25 }
   };
 
   heartsContainer.innerHTML = '';
   
   for (let i = 0; i < config.count; i++) {
-    createFloatingHeart(heartsContainer, config);
+    createFloatingHeart(heartsContainer, config, currentTheme);
   }
 }
 
-function createFloatingHeart(container, config) {
+function createFloatingHeart(container, config, theme) {
   const heart = document.createElement('div');
   heart.className = 'heart';
 
@@ -224,6 +310,22 @@ function createFloatingHeart(container, config) {
   heart.style.animationDuration = `${speed}s`;
   heart.style.animationDelay = `${delay}s`;
   heart.style.setProperty('--drift-x', `${driftAmount}px`);
+
+  // Set the correct heart color based on theme
+  const colorMap = theme === 'dark' ? {
+    'a': '%231e3a8a',
+    'b': '%233b82f6', 
+    'c': '%2360a5fa'
+  } : {
+    'a': '%23ff9bbf',
+    'b': '%23ff7fb0',
+    'c': '%23ffa4c9'
+  };
+
+  if (colorMap[color]) {
+    const heartSvg = `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${colorMap[color]}"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>')`;
+    heart.style.backgroundImage = heartSvg;
+  }
 
   container.appendChild(heart);
 }
@@ -561,6 +663,161 @@ function initPerformanceOptimizations() {
 }
 
 /* =========================
+   GUN TOOLTIP
+========================= */
+function initGunTooltip() {
+  const gunLink = document.querySelector('.gun-link');
+  if (!gunLink) return;
+
+  let tooltip = null;
+  let isAnimating = false;
+  let animationFrame = null;
+  let currentScale = 0; // Track current scale
+
+  gunLink.addEventListener('mouseenter', () => {
+    // Cancel any ongoing animation
+    if (animationFrame) {
+      cancelAnimationFrame(animationFrame);
+      animationFrame = null;
+    }
+
+    // Remove existing tooltip if any and get its current scale
+    let startScale = 0;
+    if (tooltip) {
+      const transform = tooltip.style.transform;
+      const match = transform.match(/scale\((-?\d+(?:\.\d+)?)\)/);
+      if (match) {
+        startScale = parseFloat(match[1]);
+      }
+      tooltip.remove();
+    }
+
+    // Get gun link position
+    const rect = gunLink.getBoundingClientRect();
+    
+    // Create tooltip
+    tooltip = document.createElement('div');
+    tooltip.textContent = 'guns.lol/dwnless';
+    
+    // Style tooltip
+    const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+    Object.assign(tooltip.style, {
+      position: 'fixed',
+      left: (rect.right + 8) + 'px', // Position to the right of the gun
+      top: (rect.top + rect.height / 2) + 'px', // Vertically center with gun
+      transform: `translateY(-50%) scale(${startScale})`, // Start from current scale, center vertically
+      transformOrigin: 'left center', // Pop from left edge (closest to gun)
+      background: currentTheme === 'dark' 
+        ? 'linear-gradient(135deg, var(--glass-strong), var(--sky-tertiary))' 
+        : 'linear-gradient(135deg, var(--glass-strong), var(--sky-tertiary))',
+      color: currentTheme === 'dark' ? 'var(--brand-primary)' : 'var(--brand-primary)',
+      padding: '6px 12px',
+      borderRadius: '8px',
+      fontSize: '13px',
+      fontWeight: '700',
+      fontFamily: 'Poppins, sans-serif',
+      border: currentTheme === 'dark' 
+        ? '1px solid var(--border)' 
+        : '1px solid var(--border)',
+      boxShadow: currentTheme === 'dark'
+        ? 'var(--shadow)'
+        : 'var(--shadow)',
+      zIndex: '9999',
+      pointerEvents: 'none',
+      whiteSpace: 'nowrap',
+      opacity: '0',
+      transition: 'none' // Remove CSS transitions to use JS animation
+    });
+    
+    document.body.appendChild(tooltip);
+    
+    // Animate pop in
+    isAnimating = true;
+    const targetScale = 1; // Pop to full size
+    const startTime = performance.now();
+    const duration = 250; // Slightly faster for snappy pop effect
+    
+    function animateIn(currentTime) {
+      if (!tooltip || !isAnimating) return;
+      
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      
+      // Bouncy easing for pop effect
+      const easeProgress = progress < 0.5 
+        ? 4 * progress * progress * progress
+        : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+      
+      currentScale = startScale + (targetScale - startScale) * easeProgress;
+      const opacity = Math.min(progress * 3, 1); // Fade in quickly
+      
+      tooltip.style.transform = `translateY(-50%) scale(${currentScale})`;
+      tooltip.style.opacity = opacity;
+      
+      if (progress < 1) {
+        animationFrame = requestAnimationFrame(animateIn);
+      } else {
+        isAnimating = false;
+        animationFrame = null;
+      }
+    }
+    
+    animationFrame = requestAnimationFrame(animateIn);
+  });
+
+  gunLink.addEventListener('mouseleave', () => {
+    if (!tooltip) return;
+    
+    // Cancel any ongoing animation
+    if (animationFrame) {
+      cancelAnimationFrame(animationFrame);
+      animationFrame = null;
+    }
+    
+    // Get current scale for smooth animation
+    const transform = tooltip.style.transform;
+    const match = transform.match(/scale\((-?\d+(?:\.\d+)?)\)/);
+    const startScale = match ? parseFloat(match[1]) : 1;
+    
+    isAnimating = true;
+    const targetScale = 0; // Shrink to nothing
+    const startTime = performance.now();
+    const duration = 200; // Quick pop out
+    
+    function animateOut(currentTime) {
+      if (!tooltip) return;
+      
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      
+      // Quick ease-in for snappy disappearance
+      const easeProgress = Math.pow(progress, 2);
+      
+      currentScale = startScale + (targetScale - startScale) * easeProgress;
+      const opacity = Math.max(1 - progress * 2, 0); // Fade out quickly
+      
+      tooltip.style.transform = `translateY(-50%) scale(${currentScale})`;
+      tooltip.style.opacity = opacity;
+      
+      if (progress < 1) {
+        animationFrame = requestAnimationFrame(animateOut);
+      } else {
+        // Animation complete, remove tooltip
+        if (tooltip) {
+          tooltip.remove();
+          tooltip = null;
+        }
+        isAnimating = false;
+        animationFrame = null;
+        currentScale = 0; // Reset for next time
+      }
+    }
+    
+    animationFrame = requestAnimationFrame(animateOut);
+  });
+}
+
+/* =========================
    UTILS
 ========================= */
 function announceToScreenReader(message) {
@@ -571,4 +828,47 @@ function announceToScreenReader(message) {
   announcement.textContent = message;
   document.body.appendChild(announcement);
   setTimeout(() => announcement?.remove(), 1200);
+}
+
+function updateHeartColors(theme) {
+  const hearts = document.querySelectorAll('.heart');
+  if (!hearts.length) return;
+
+  const colorMap = theme === 'dark' ? {
+    'a': '%231e3a8a',
+    'b': '%233b82f6', 
+    'c': '%2360a5fa'
+  } : {
+    'a': '%23ff9bbf',
+    'b': '%23ff7fb0',
+    'c': '%23ffa4c9'
+  };
+
+  hearts.forEach(heart => {
+    const color = heart.dataset.color;
+    if (color && colorMap[color]) {
+      const heartSvg = `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${colorMap[color]}"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>')`;
+      heart.style.backgroundImage = heartSvg;
+    }
+  });
+}
+
+function updateLandingHeartColors(theme) {
+  const landingHearts = document.querySelectorAll('.landing-heart');
+  if (!landingHearts.length) return;
+
+  const themeColors = theme === 'dark' ? [
+    '#1e3a8a', '#3b82f6', '#60a5fa', '#93c5fd', 
+    '#2563eb', '#1e40af', '#1d4ed8', '#dbeafe'
+  ] : [
+    '#ff9bbf', '#ff7fb0', '#ffa4c9', '#ff6ba3', 
+    '#ffb3d1', '#ff8bc1', '#ff5b9e', '#ffcde0'
+  ];
+
+  landingHearts.forEach(heart => {
+    // Get a random color from the new theme
+    const randomColor = themeColors[Math.floor(Math.random() * themeColors.length)];
+    const heartSvg = `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${encodeURIComponent(randomColor)}"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>')`;
+    heart.style.backgroundImage = heartSvg;
+  });
 }
